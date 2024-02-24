@@ -1,12 +1,15 @@
 #[derive(Debug)]
 pub struct Todo {
     completed: bool,
-    description: String
+    description: String,
 }
 
 impl Todo {
     pub fn new(desc: String) -> Self {
-        Todo { completed: false, description: desc }
+        Todo {
+            completed: false,
+            description: desc,
+        }
     }
 
     pub fn complete(&mut self) {
@@ -14,10 +17,10 @@ impl Todo {
     }
 
     pub fn get_completed(&self) -> bool {
-      self.completed
+        self.completed
     }
 
     pub fn get_description(&self) -> &str {
-      &self.description
+        &self.description
     }
 }

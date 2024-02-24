@@ -1,61 +1,67 @@
-mod task;
+mod todo_manager;
+mod utils;
 
-use std::collections::HashMap;
-use std::io;
-use task::Todo;
+use todo_manager::{Todo, TodoList};
 
-fn read_non_empty_line(buf: &mut String) {
-    loop {
-        io::stdin().read_line(buf).expect("Failed to read line");
+enum AppState {
+    Main,
+    UsingTodo(String),
+}
 
-        *buf = buf.trim().to_string();
+fn create_todo(todo_list: &mut TodoList) {
+    let mut name = String::new();
+    let mut desc = String::new();
 
-        if buf.is_empty() {
-            println!("Can't enter an empty line. Please try again");
-        } else {
-            break;
+    println!("Please input a name");
+
+    utils::read_non_empty_line(&mut name);
+
+    println!("Please input a description");
+
+    utils::read_non_empty_line(&mut desc);
+
+    if let Err(todo_manager::Error::AlreadyExists) = todo_list.add_todo(name, desc) {
+        println!("A todo with this name already exists!");
+    }
+}
+
+fn print_menu(state: &AppState) {
+    match state {
+        AppState::Main => {
+            println!("Welcome to my console todo app made in rust!");
+            println!("Please choose from the following options:");
+            println!("1. Create a todo");
+            println!("2. Use a todo");
+        }
+        AppState::UsingTodo(name) => {
+            println!("Using {name}:");
+            println!("1. Change description");
+            println!("2. Toggle completed");
         }
     }
 }
 
 fn main() {
-    let mut todos: HashMap<String, Todo> = HashMap::new();
+    let mut todo_list = TodoList::new();
+    let mut state = AppState::Main;
+    let mut command = String::new();
 
-    loop {
-        let mut name = String::new();
-        let mut desc = String::new();
+    while command != "quit" {
+        print_menu(&state);
+        command.clear();
+        utils::read_non_empty_line(&mut command);
 
-        println!("Please input a name");
-
-        read_non_empty_line(&mut name);
-
-        if name == "quit" {
-            break;
-        } else if todos.contains_key(&name) {
-            println!("Can't create 2 todos with the same name");
-            continue;
+        match state {
+            AppState::Main => match command.trim() {
+                "1" => create_todo(&mut todo_list),
+                "2" => {}
+                _ => println!("Invalid command"),
+            },
+            AppState::UsingTodo(_) => match command.trim() {
+                "1" => {}
+                "2" => {}
+                _ => println!("Invalid command"),
+            },
         }
-
-        println!("Please input a description");
-
-        read_non_empty_line(&mut desc);
-
-        let todo = Todo::new(desc);
-        todos.insert(name, todo);
-        // println!("{:?}", todos);
     }
-
-    // let mut first = Todo::new(desc);
-    // first.complete();
-    // let desc = first.get_description();
-    // let complete = first.get_completed();
-    // println!(
-    //     "You {} todo with description: {}",
-    //     if complete {
-    //         "completed"
-    //     } else {
-    //         "didn't complete"
-    //     },
-    //     desc.trim()
-    // );
 }
