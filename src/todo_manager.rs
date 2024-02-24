@@ -20,11 +20,21 @@ impl TodoList {
 
     pub fn add_todo(&mut self, name: String, description: String) -> Result<(), Error> {
         if self.todos.contains_key(&name) {
-            println!("Can't create 2 todos with the same name");
             return Err(Error::AlreadyExists);
         }
 
         self.todos.insert(name, Todo::new(description));
         Ok(())
+    }
+
+    pub fn list_todos(&self) {
+        for (name, todo) in &self.todos {
+            println!("{:?}", todo);
+            println!(
+                "[{}] Name: {name}, Description: {}",
+                if todo.get_completed() { "X" } else { " " },
+                todo.get_description()
+            )
+        }
     }
 }

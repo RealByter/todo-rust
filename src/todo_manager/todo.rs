@@ -12,8 +12,8 @@ impl Todo {
         }
     }
 
-    pub fn complete(&mut self) {
-        self.completed = true;
+    pub fn toggle(&mut self) {
+        self.completed = !self.completed;
     }
 
     pub fn get_completed(&self) -> bool {

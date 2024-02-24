@@ -28,10 +28,10 @@ fn create_todo(todo_list: &mut TodoList) {
 fn print_menu(state: &AppState) {
     match state {
         AppState::Main => {
-            println!("Welcome to my console todo app made in rust!");
             println!("Please choose from the following options:");
             println!("1. Create a todo");
-            println!("2. Use a todo");
+            println!("2. Print current todos");
+            println!("3. Use a todo");
         }
         AppState::UsingTodo(name) => {
             println!("Using {name}:");
@@ -46,15 +46,22 @@ fn main() {
     let mut state = AppState::Main;
     let mut command = String::new();
 
-    while command != "quit" {
+    println!("Welcome to my console todo app made in rust!");
+
+    loop {
         print_menu(&state);
         command.clear();
         utils::read_non_empty_line(&mut command);
 
+        if command == "quit" {
+          break;
+        }
+
         match state {
             AppState::Main => match command.trim() {
                 "1" => create_todo(&mut todo_list),
-                "2" => {}
+                "2" => todo_list.list_todos(),
+                "3" => {}
                 _ => println!("Invalid command"),
             },
             AppState::UsingTodo(_) => match command.trim() {
