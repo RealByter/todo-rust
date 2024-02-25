@@ -29,12 +29,23 @@ impl TodoList {
 
     pub fn list_todos(&self) {
         for (name, todo) in &self.todos {
-            println!("{:?}", todo);
             println!(
                 "[{}] Name: {name}, Description: {}",
                 if todo.get_completed() { "X" } else { " " },
                 todo.get_description()
             )
         }
+    }
+
+    pub fn does_exist(&self, name: &str) -> bool {
+        self.todos.contains_key(name)
+    }
+
+    pub fn toggle_todo(&mut self, name: &str) {
+        let todo = self
+            .todos
+            .get_mut(name)
+            .expect("Should only be used after does_exist");
+        todo.toggle();
     }
 }

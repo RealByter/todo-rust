@@ -13,11 +13,9 @@ fn create_todo(todo_list: &mut TodoList) {
     let mut desc = String::new();
 
     println!("Please input a name");
-
     utils::read_non_empty_line(&mut name);
 
     println!("Please input a description");
-
     utils::read_non_empty_line(&mut desc);
 
     if let Err(todo_manager::Error::AlreadyExists) = todo_list.add_todo(name, desc) {
@@ -37,7 +35,19 @@ fn print_menu(state: &AppState) {
             println!("Using {name}:");
             println!("1. Change description");
             println!("2. Toggle completed");
+            println!("3. Stop using");
         }
+    }
+}
+
+fn use_todo(todo_list: &TodoList, state: &mut AppState) {
+    let mut name = String::new();
+    println!("Please input the name of the todo that you want to use:");
+    utils::read_non_empty_line(&mut name);
+    if todo_list.does_exist(&name) {
+        *state = AppState::UsingTodo(name);
+    } else {
+        println!("Todo doesn't exist!");
     }
 }
 
@@ -54,19 +64,20 @@ fn main() {
         utils::read_non_empty_line(&mut command);
 
         if command == "quit" {
-          break;
+            break;
         }
 
         match state {
             AppState::Main => match command.trim() {
                 "1" => create_todo(&mut todo_list),
                 "2" => todo_list.list_todos(),
-                "3" => {}
+                "3" => use_todo(&todo_list, &mut state),
                 _ => println!("Invalid command"),
             },
-            AppState::UsingTodo(_) => match command.trim() {
+            AppState::UsingTodo(ref name) => match command.trim() {
                 "1" => {}
-                "2" => {}
+                "2" => todo_list.toggle_todo(name),
+                "3" => state = AppState::Main,
                 _ => println!("Invalid command"),
             },
         }
